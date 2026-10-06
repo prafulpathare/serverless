@@ -1,4 +1,4 @@
-# Local Multi-Client FaaS (Lambda-like Runtime)
+# ServerLess (FaaS)
 
 A lightweight, self-hosted **Function-as-a-Service** platform inspired by AWS Lambda.  
 It lets multiple clients create, manage, and invoke **Node.js** functions with isolation, timeouts, and API-key authentication — all running on your own machine (or any server).
