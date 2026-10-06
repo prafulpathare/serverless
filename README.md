@@ -51,8 +51,8 @@ serverless/
 ## Installation
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/my-local-faas.git
-cd my-local-faas
+git clone https://github.com/prafulpathare/serverless.git
+cd serverless
 
 npm install
 ```
@@ -221,19 +221,6 @@ This project already handles it correctly by converting paths to `file://` URLs 
 
 ---
 
-## Future Improvements (Ideas)
-
-- [ ] Per-function configuration (`timeout`, `memory`, `env` variables)
-- [ ] Capture and return `console.log` / `console.error` from functions
-- [ ] Warm process pool for lower latency
-- [ ] Simple admin API to create/revoke clients
-- [ ] Function versioning
-- [ ] Rate limiting per client
-- [ ] Optional Docker-based isolation for stronger sandboxing
-- [ ] Web UI dashboard
-
----
-
 ## Security Notes
 
 - This is designed for **trusted environments** or private networks.
@@ -256,5 +243,5 @@ MIT
 
 ## Contributing
 
-Pull requests and ideas are welcome!  
+Pull requests and ideas are welcome!
 Feel free to open issues for bugs or feature requests.
