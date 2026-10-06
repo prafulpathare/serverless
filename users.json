@@ -1,0 +1,12 @@
+{
+    "clients": {
+        "user_abc123": {
+            "name": "Client A",
+            "apiKey": "sk_live_abc123xyz"
+        },
+        "user_xyz789": {
+            "name": "Client B",
+            "apiKey": "sk_live_xyz789uvw"
+        }
+    }
+}
