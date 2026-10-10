@@ -1,24 +1,111 @@
-### Create Function
-POST http://localhost:3000/functions/hello
-x-api-key: sk_live_abc123xyz
+@host = http://localhost:3000
+@admin = rsk_ihdiushd7dgsuyd36fevwdyud
+# After creating a client, paste its apiKey here:
+@key = sk_live_Qrt8L42jJkCoOXLudsDCA3nTRtSoFlzh 
+# key will be fetched only once from Create a client (/admin/clients)
+
+### ---------- ADMIN ----------
+### Create a client (response contains apiKey - shown once)
+POST {{host}}/admin/clients
+x-admin-key: {{admin}}
+Content-Type: application/json
+
+{ "name": "Client A", "email": "clientA@mail.com" }
+
+### List clients
+GET {{host}}/admin/clients
+x-admin-key: {{admin}}
+
+### Suspend / reactivate
+PATCH {{host}}/admin/clients/PASTE_CLIENT_UUID
+x-admin-key: {{admin}}
+Content-Type: application/json
+
+{ "status": "suspended" }
+
+### ---------- FUNCTIONS ----------
+### Create (raw JS, same as before)
+POST {{host}}/functions/hello
+x-api-key: {{key}}
 Content-Type: text/plain
 
 export const handler = async (event, context) => {
   return {
     statusCode: 200,
     body: JSON.stringify({
-      message: "Hello from Client A!",
+      message: "Hello from Praful!",
       input: event,
       requestId: context.awsRequestId
     })
   };
 };
 
-### Call Function
-POST http://localhost:3000/invoke/hello
-x-api-key: sk_live_abc123xyz
+### Invoke
+POST {{host}}/invoke/hello
+x-api-key: {{key}}
 Content-Type: application/json
 
-{
-  "name": "John Doe"
-}
+{ "name": "John Doe" }
+
+### Deploy new version
+PUT {{host}}/functions/hello
+x-api-key: {{key}}
+Content-Type: text/plain
+
+export const handler = async (event) => ({ message: "v2", event });
+
+### Details + versions
+GET {{host}}/functions/hello
+x-api-key: {{key}}
+
+### Roll back to v1
+POST {{host}}/functions/hello/rollback/1
+x-api-key: {{key}}
+
+### Logs / history
+GET {{host}}/functions/hello/invocations
+x-api-key: {{key}}
+
+### ---------- CLIENT'S OWN DATABASES ----------
+### Register the client's hosted Postgres (Neon, Supabase, RDS, ...)
+PUT {{host}}/connections/analytics
+x-api-key: {{key}}
+Content-Type: application/json
+
+{ "type": "postgres", "url": "postgres://user:pass@db.example.com:5432/mydb", "ssl": true }
+
+### Register a MongoDB Atlas cluster
+PUT {{host}}/connections/docs
+x-api-key: {{key}}
+Content-Type: application/json
+
+{ "type": "mongodb", "url": "mongodb+srv://user:pass@cluster0.xxxxx.mongodb.net/mydb" }
+
+### List (credentials are never returned)
+GET {{host}}/connections
+x-api-key: {{key}}
+
+### Function that uses it
+POST {{host}}/functions/db-demo
+x-api-key: {{key}}
+Content-Type: text/plain
+
+export const handler = async (event, context) => {
+  const db = await context.getConnection('analytics');   // pg.Pool
+  const { rows } = await db.query('select now() as now, current_database() as db');
+  return { statusCode: 200, rows };
+};
+
+###
+POST {{host}}/invoke/db-demo
+x-api-key: {{key}}
+Content-Type: application/json
+
+{}
+
+### Restrict which connections a function can see + set env vars (secrets)
+PATCH {{host}}/functions/db-demo/config
+x-api-key: {{key}}
+Content-Type: application/json
+
+{ "connections": ["analytics"], "env": { "STRIPE_KEY": "sk_test_123" }, "timeoutMs": 20000 }
